@@ -1,0 +1,10 @@
+<header>
+  <div class="site-title">EJS Yourself</div>
+  <nav class="site-nav">
+    <ul>
+      <% for( let i = 0; i < navItems.length; i++ ) { %>
+      <li><a href=" <%= navItems[i].path %> "><%= navItems[i].name%></a></li>
+      <% } %>
+    </ul>
+  </nav>
+</header>

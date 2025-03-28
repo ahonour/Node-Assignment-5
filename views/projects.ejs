@@ -1,0 +1,36 @@
+<h1>Projects</h1>
+<form action="projects/search" method="get" name="searchForm" id="searchForm">
+  <input type="text" name="searchTerm" placeholder="Search projects" />
+</form>
+
+<div class="project-container" id="project-container">
+  <% for (let i = 0; i < projects.length; i++) { %>
+  <div class="project" id="project-<%= projects[i].id %>">
+    <h2 class="project-title"><%= projects[i].title %></h2>
+    <div class="tag-container">
+      <% for (let j = 0; j < projects[i].tech.length; j++) { %>
+      <span class="tag"><%= projects[i].tech[j] %> </span>
+      <% } %>
+    </div>
+    <img
+      class="project-image"
+      src="<%= projects[i].screenshot %>"
+      alt="image of project"
+    />
+    <p class="project-summary"><%= projects[i].summary %></p>
+
+    <div class="action-container">
+      <a href="/projects/<%= projects[i]._id %>/edit" class="project-link"
+        >Edit Project</a
+      >
+      <a href="/projects/<%= projects[i]._id %>/delete" class="project-link"
+        >Delete Project</a
+      >
+      <a href="/projects/<%= projects[i]._id %>" class="project-link"
+        >View Project</a
+      >
+    </div>
+  </div>
+  <% } %>
+</div>
+<a href="/projects/create" class="project-link">Add Project</a>

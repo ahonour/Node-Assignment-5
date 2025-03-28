@@ -1,0 +1,28 @@
+<div id="project-details" class="project-details">
+  <div class="project" id="project-<%= project.id %>">
+    <h2 class="project-title"><%= project.title%></h2>
+    <div class="tag-container">
+      <% for( let i = 0; i < project.tech.length; i++ ) { %>
+      <span class="tag"><%= project.tech[i] %> </span>
+      <% } %>
+    </div>
+    <img
+      class="project-image"
+      src="<%= project.screenshot %>"
+      alt="image of project <%= project.id %>"
+    />
+    <p class="project-summary"><%= project.summary %></p>
+
+    <div class="action-container">
+      <a href="/projects/<%= project._id %>/edit" class="project-link"
+        >Edit Project</a
+      >
+      <a href="/projects/<%= project._id %>/delete" class="project-link"
+        >Delete Project</a
+      >
+    </div>
+  </div>
+</div>
+<div class="nav-btn-container">
+  <a href="/projects/" class="project-link nav-btn">Back to All Projects</a>
+</div>

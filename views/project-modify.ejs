@@ -1,0 +1,62 @@
+<h2 class="modify-title"><%= project.id ? "Edit" : "Create" %> Profile</h2>
+
+<form
+  class="project-form"
+  action="<%= project._id ? `/projects/${project._id}/edit` : `/projects/create` %>"
+  method="post"
+  enctype="multipart/form-data"
+>
+  <input type="hidden" id="_id" name="_id" value="<%= project._id %>" />
+
+  <label for="title" class="visually-hidden">Title:</label>
+  <input
+    id="title"
+    name="title"
+    type="text"
+    placeholder="Title"
+    value="<%= project.title %>"
+  />
+
+  <label for="screenshot" class="visually-hidden">Screenshot:</label>
+  <div class="image-upload-container">
+    <% if (project.screenshot) { %>
+    <div class="current-image">
+      <p>Current image:</p>
+      <img
+        src="<%= project.screenshot %>"
+        alt="Current screenshot"
+        class="project-image"
+      />
+      <p>Upload a new image to replace it:</p>
+    </div>
+    <% } %> <input type="file" name="projectImg" id="projectImg" <%=
+    !project.screenshot ? 'required' : '' %> /> <% if (project.screenshot) { %>
+    <!-- Keep the current image if no new one is uploaded -->
+    <input
+      type="hidden"
+      name="currentScreenshot"
+      value="<%= project.screenshot %>"
+    />
+    <% } %>
+  </div>
+
+  <label for="summary" class="visually-hidden">Summary:</label>
+  <input
+    id="summary"
+    name="summary"
+    type="text"
+    placeholder="Summary"
+    value="<%= project.summary %>"
+  />
+
+  <label for="tech" class="visually-hidden">Tech:</label>
+  <input
+    id="tech"
+    name="tech"
+    type="text"
+    placeholder="Tech (comma separated)"
+    value="<%= project.tech ? project.tech.join(', ') : '' %>"
+  />
+
+  <button type="submit" value="Submit">Submit</button>
+</form>
