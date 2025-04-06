@@ -5,10 +5,8 @@
       <% for( let i = 0; i < navItems.length; i++ ) { %>
       <li><a href=" <%= navItems[i].path %> "><%= navItems[i].name%></a></li>
       <% } %> <%if (reqInfo.authenticated) { %>
+      <a href="/contact">Contact</a>
       <a href="/user/logout">Logout</a>
-      <div>Welcome <%= reqInfo.firstName %></div>
-
-      <!-- 'else' must be in separate section with curly brackets to work. -->
       <% } else { %>
       <a href="/user/login">Login</a>
       <a href="/user/register">Register</a>

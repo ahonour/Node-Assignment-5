@@ -2,6 +2,7 @@ const ProjectsOps = require('../data/ProjectsOps.js');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { reqHelper } = require('../services/RequestService.js');
 
 // Create storage configuration
 const storage = multer.diskStorage({
@@ -20,8 +21,20 @@ const _projectsOps = new ProjectsOps();
 
 const upload = multer({ storage: storage });
 
+function checkAdminRole(req, res, next) {
+  console.log('Session roles:', req.session.roles); // Debug session roles
+  let info = reqHelper(req, ['admin']);
+  console.log('reqInfo', info);
+  if (info.rolePermitted) {
+    return next();
+  } else {
+    res.status(403).redirect('/projects');
+  }
+}
+
 exports.Index = async function (request, response) {
   let projects = await _projectsOps.getAllProjects();
+
   if (projects) {
     if (request.query.format === 'json') {
       response.json(projects);
@@ -82,39 +95,46 @@ exports.Search = async function (request, response) {
   }
 };
 
-exports.Delete = async function (request, response) {
-  const projectId = request.params.id;
-  let delProject = await _projectsOps.deleteProject(projectId);
-  if (delProject) {
-    console.log(`successfully deleted ${delProject} (probably)`);
-    let projects = await _projectsOps.getAllProjects();
-    const filePath = path.join('public', delProject.screenshot);
-    fs.unlink(filePath, (err) => {
-      if (err) {
-        console.error(`Error removing file: ${err}`);
-        return;
-      }
-      console.log(`File ${filePath} has been successfully removed.`);
-    });
-    response.render('projects', {
-      title: 'Projects',
-      projects: projects,
-    });
-  } else {
-    console.log('Error, project not found');
-    response.render('error');
-  }
-};
+exports.Delete = [
+  checkAdminRole,
+  async function (request, response) {
+    const projectId = request.params.id;
+    let delProject = await _projectsOps.deleteProject(projectId);
+    if (delProject) {
+      console.log(`successfully deleted ${delProject} (probably)`);
+      let projects = await _projectsOps.getAllProjects();
+      const filePath = path.join('public', delProject.screenshot);
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          console.error(`Error removing file: ${err}`);
+          return;
+        }
+        console.log(`File ${filePath} has been successfully removed.`);
+      });
+      response.render('projects', {
+        title: 'Projects',
+        projects: projects,
+      });
+    } else {
+      console.log('Error, project not found');
+      response.render('error');
+    }
+  },
+];
 
-exports.Create = async function (request, response) {
-  response.render('project-modify', {
-    title: 'Add a Project',
-    message: null,
-    project: {},
-  });
-};
+exports.Create = [
+  checkAdminRole,
+  async function (request, response) {
+    response.render('project-modify', {
+      title: 'Add a Project',
+      message: null,
+      project: {},
+    });
+  },
+];
 
 exports.CreateProject = [
+  checkAdminRole,
   upload.single('projectImg'),
   async function (request, response) {
     let tech = request.body.tech.split(',').map((t) => t.trim());
@@ -152,22 +172,27 @@ exports.CreateProject = [
   },
 ];
 
-exports.Edit = async function (request, response) {
-  const projectId = request.params.id;
-  console.log(`loading single project by id ${projectId}`);
-  let project = await _projectsOps.getProjectById(projectId);
-  if (project) {
-    response.render('project-modify', {
-      title: 'Edit Project',
-      project: project,
-      message: null,
-    });
-  } else {
-    console.log('Error, project not found');
-    response.render('error');
-  }
-};
+exports.Edit = [
+  checkAdminRole,
+  async function (request, response) {
+    const projectId = request.params.id;
+    console.log(`loading single project by id ${projectId}`);
+    let project = await _projectsOps.getProjectById(projectId);
+    if (project) {
+      response.render('project-modify', {
+        title: 'Edit Project',
+        project: project,
+        message: null,
+      });
+    } else {
+      console.log('Error, project not found');
+      response.render('error');
+    }
+  },
+];
+
 exports.Update = [
+  checkAdminRole,
   upload.single('projectImg'),
   async function (request, response) {
     let tech = request.body.tech.split(',').map((t) => t.trim());

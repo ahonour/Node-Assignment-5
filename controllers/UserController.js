@@ -1,6 +1,9 @@
 const User = require('../models/User');
 const passport = require('passport');
 const RequestService = require('../services/RequestService');
+const UserData = require('../data/UserData');
+const _userData = new UserData();
+
 // Displays registration form.
 exports.Register = async function (req, res) {
   let reqInfo = RequestService.reqHelper(req);
@@ -67,10 +70,28 @@ exports.Login = async function (req, res) {
   });
 };
 // Receive login information, authenticate, and redirect depending on pass or fail.
+// exports.LoginUser = (req, res, next) => {
+//   passport.authenticate('local', {
+//     successRedirect: '/',
+//     failureRedirect: '/user/login?errorMessage=Invalid login.',
+//   })(req, res, next);
+// };
 exports.LoginUser = (req, res, next) => {
-  passport.authenticate('local', {
-    successRedirect: '/',
-    failureRedirect: '/user/login?errorMessage=Invalid login.',
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.redirect('/user/login?errorMessage=Invalid login.');
+    }
+    req.logIn(user, (err) => {
+      if (err) {
+        return next(err);
+      }
+      // Set roles in the session
+      req.session.roles = user.roles || [];
+      return res.redirect('/');
+    });
   })(req, res, next);
 };
 

@@ -53,12 +53,26 @@ app.use(passport.initialize());
 app.use(passport.session());
 const User = require('./models/User');
 passport.use(new LocalStrategy(User.authenticate()));
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+passport.serializeUser((user, done) => {
+  done(null, { id: user.id, roles: user.roles });
+});
+
+passport.deserializeUser(async (user, done) => {
+  try {
+    const dbUser = await User.findById(user.id);
+    done(null, {
+      id: dbUser.id,
+      username: dbUser.username,
+      roles: dbUser.roles,
+    });
+  } catch (err) {
+    done(err, null);
+  }
+});
 
 // Make reqInfo available to all views
 app.use((req, res, next) => {
-  res.locals.reqInfo = RequestService.reqHelper(req);
+  res.locals.reqInfo = RequestService.reqHelper(req, ['admin']);
   next();
 });
 
@@ -67,7 +81,6 @@ app.locals.title = 'EJS yourself';
 app.locals.navItems = [
   { name: 'Home', path: '/' },
   { name: 'About', path: '/about' },
-  { name: 'Contact', path: '/contact' },
   { name: 'Projects', path: '/projects' },
 ];
 

@@ -1,5 +1,5 @@
 <h1>Projects</h1>
-<form action="projects/search" method="get" name="searchForm" id="searchForm">
+<form action="/projects/search" method="get" name="searchForm" id="searchForm">
   <input type="text" name="searchTerm" placeholder="Search projects" />
 </form>
 
@@ -20,12 +20,15 @@
     <p class="project-summary"><%= projects[i].summary %></p>
 
     <div class="action-container">
+      <% if (reqInfo.rolePermitted) { %>
       <a href="/projects/<%= projects[i]._id %>/edit" class="project-link"
         >Edit Project</a
       >
       <a href="/projects/<%= projects[i]._id %>/delete" class="project-link"
         >Delete Project</a
       >
+      <% } %>
+
       <a href="/projects/<%= projects[i]._id %>" class="project-link"
         >View Project</a
       >
@@ -33,4 +36,7 @@
   </div>
   <% } %>
 </div>
+
+<% if (reqInfo.rolePermitted) { %>
 <a href="/projects/create" class="project-link">Add Project</a>
+<% } %>

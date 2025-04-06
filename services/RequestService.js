@@ -1,6 +1,6 @@
 class RequestService {
   // Constructor
-  RequestService() {}
+  constructor() {}
   reqHelper(req, permittedRoles = []) {
     // restrict permissions by default
     let rolePermitted = false;

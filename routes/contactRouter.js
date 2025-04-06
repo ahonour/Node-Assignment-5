@@ -1,34 +1,25 @@
 const express = require('express');
 const contactRouter = express.Router();
+const Contact = require('../models/Contact');
 
 // Middleware to parse URL-encoded data
 contactRouter.use(express.urlencoded({ extended: true }));
 
+// Render contact form
 contactRouter.get('/', (req, res) => {
-  const viewData = {
-    submitted: req.query.submitted === 'true',
-  };
-  if (req.query.format === 'json') {
-    res.json({ success: true, message: 'Thank you for reaching out!' });
-  } else {
-    res.render('contact', viewData);
-  }
+  res.render('contact', { submitted: false });
 });
 
-contactRouter.post('/', (req, res) => {
-  const { userName, userMessage } = req.body;
-  if (userName && userMessage) {
-    console.log(`User Name: ${userName}`);
-    console.log(`User Message: ${userMessage}`);
-    const viewData = {
-      userName: userName,
-      userMessage: userMessage,
-      submitted: true,
-    };
-    res.render('contact', viewData);
-  } else {
-    console.log('Error submitting message');
-    res.redirect('contact');
+// Handle contact form submission
+contactRouter.post('/submit', async (req, res) => {
+  try {
+    const { userName, userMessage } = req.body;
+    const newContact = new Contact({ user: userName, message: userMessage });
+    await newContact.save();
+    res.render('contact', { submitted: true });
+  } catch (error) {
+    console.error('Error saving contact message:', error);
+    res.status(500).send('An error occurred while submitting your message.');
   }
 });
 
