@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const passportLocalMongoose = require('passport-local-mongoose');
 
 const projectsSchema = mongoose.Schema(
   {
@@ -11,6 +12,8 @@ const projectsSchema = mongoose.Schema(
 
   { collection: 'projects' }
 );
+
+projectsSchema.plugin(passportLocalMongoose);
 
 // Pass the Schema into Mongoose to use as our model
 const Projects = mongoose.model('Projects', projectsSchema);

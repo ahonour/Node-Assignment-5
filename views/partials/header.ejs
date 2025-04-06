@@ -6,7 +6,7 @@
       <li><a href=" <%= navItems[i].path %> "><%= navItems[i].name%></a></li>
       <% } %> <%if (reqInfo.authenticated) { %>
       <a href="/user/logout">Logout</a>
-      [<%= reqInfo.username %>]
+      <div>Welcome <%= reqInfo.firstName %></div>
 
       <!-- 'else' must be in separate section with curly brackets to work. -->
       <% } else { %>

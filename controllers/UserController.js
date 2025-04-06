@@ -55,3 +55,41 @@ exports.RegisterUser = async function (req, res) {
     });
   }
 };
+
+// Show login form.
+exports.Login = async function (req, res) {
+  let reqInfo = RequestService.reqHelper(req);
+  let errorMessage = req.query.errorMessage;
+  res.render('user/login', {
+    user: {},
+    errorMessage: errorMessage,
+    reqInfo: reqInfo,
+  });
+};
+// Receive login information, authenticate, and redirect depending on pass or fail.
+exports.LoginUser = (req, res, next) => {
+  passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/user/login?errorMessage=Invalid login.',
+  })(req, res, next);
+};
+
+// Log user out and direct them to the login screen.
+exports.Logout = (req, res) => {
+  // Use Passports logout function
+  req.logout((err) => {
+    if (err) {
+      console.log('logout error');
+      return next(err);
+    } else {
+      // logged out. Update the reqInfo and redirect to the login page
+      let reqInfo = RequestService.reqHelper(req);
+      res.render('user/login', {
+        user: {},
+        isLoggedIn: false,
+        errorMessage: '',
+        reqInfo: reqInfo,
+      });
+    }
+  });
+};

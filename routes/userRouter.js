@@ -8,4 +8,13 @@ userRouter.get('/register', UserController.Register);
 // Handle register form submission
 userRouter.post('/register', UserController.RegisterUser);
 
+// GET login page
+userRouter.get('/login', UserController.Login);
+
+// Handle login form submission
+userRouter.post('/login', UserController.LoginUser);
+
+// GET logout
+userRouter.get('/logout', UserController.Logout);
+
 module.exports = userRouter;
