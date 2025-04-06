@@ -1,14 +1,19 @@
 const express = require('express');
 const indexRouter = express.Router();
+const IndexController = require('../controllers/IndexController');
 const path = require('path');
 
 indexRouter.get('/', (req, res) => {
   if (req.query.format === 'json') {
     res.json({ message: 'Welcome to My Node.js Portfolio!' });
   } else {
-    res.render('index', {
-      title: 'Welcome to My Node.js Portfolio',
-    });
+    res.render(
+      'index',
+      {
+        title: 'Welcome to My Node.js Portfolio',
+      },
+      IndexController.Index(req, res)
+    );
   }
 });
 
