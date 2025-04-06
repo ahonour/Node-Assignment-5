@@ -8,7 +8,7 @@ const expressLayouts = require('express-ejs-layouts');
 require('dotenv').config();
 const cors = require('cors');
 const passport = require('passport');
-const passport = require('passport-local');
+const passportLocal = require('passport-local');
 
 const hostname = '127.0.0.1';
 const port = process.env.port || 3000;
