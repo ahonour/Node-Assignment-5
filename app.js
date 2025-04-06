@@ -7,21 +7,16 @@ const logger = require('morgan');
 const expressLayouts = require('express-ejs-layouts');
 require('dotenv').config();
 const cors = require('cors');
+const { mongoose } = require('mongoose');
 const passport = require('passport');
-const passport = require('passport-local');
+const LocalStrategy = require('passport-local');
 
 const hostname = '127.0.0.1';
 const port = process.env.port || 3000;
 
 const uri = process.env.MONGO_URI;
 
-const indexRouter = require('./routes/indexRouter');
-const contactRouter = require('./routes/contactRouter');
-const projectRouter = require('./routes/projectRouter');
-const errorRouter = require('./routes/errorRouter');
-
 // Database setup
-const { mongoose } = require('mongoose');
 mongoose.connect(uri);
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
@@ -37,6 +32,23 @@ app.use(logger('dev'));
 app.use(express.static('public'));
 app.use(expressLayouts);
 
+// Set up session management
+app.use(
+  require('express-session')({
+    secret: `shhhhh, it's so secret`,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+// User Auth
+app.use(passport.initialize());
+app.use(passport.session());
+const User = require('./models/User');
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 // Local variables
 app.locals.title = 'EJS yourself';
 app.locals.navItems = [
@@ -47,6 +59,11 @@ app.locals.navItems = [
 ];
 
 // Routes
+const indexRouter = require('./routes/indexRouter');
+const contactRouter = require('./routes/contactRouter');
+const projectRouter = require('./routes/projectRouter');
+const errorRouter = require('./routes/errorRouter');
+
 app.use('/contact', contactRouter);
 app.use('/projects', projectRouter);
 app.use('/', indexRouter);
